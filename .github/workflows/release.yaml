@@ -5,88 +5,34 @@ run-name: Create Github Release for GoLang binary
 on: 
   push:
     tags:
-    - '*'
+    - 'v*'
 
 env:
   binary-name: snakesneaks
   output-dir: bin/
 jobs:
-  build:
+  build-and-release:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
-    strategy:
-      matrix: 
-        goos: [linux, windows, darwin]
-        goarch: ["386", amd64, arm64]
-        exclude:
-          - goarch: "386"
-            goos: darwin
-          - goarch: arm64
-            goos: windows
     steps:
-    # debug
-    - name: Dump env
-      run: env | sort
-    - name: Dump GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"
-
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0 # get all tags, needed to get git log
-        ref: main
+    - name: Checkout Source
+      uses: actions/checkout@v4
 
     - name: setup Go Lang
       uses: actions/setup-go@v3
       with:
         go-version: '^1.19.2'
-    - name: setup Go Binary Directory
-      run: |
-        mkdir ${{env.output-dir}}
+        
     - name: Go Build
       run: |
-        go version
-        go mod tidy
-        GOARCH=${{matrix.goarch}} goos=${{matrix.goos}} go build -ldflags "-X main.Version=${GITHUB_REF_NAME} -X main.BuiltBy=github-actions" -o ${{env.output-dir}}/${{env.binary-name}}-${{matrix.goarch}}-${{matrix.goos}} main.go
+        make x-build
 
-    - run: git version
-    - run: git branch
-    - run: git tag
-
-    - name: get semantic tag version and release notes from commit messages
-      id: tag 
-      run: |
-        curtag=${GITHUB_REF_NAME}
-        major_minor=$(echo "$curtag" | cut -d'.' -f1-2)
-        patch=$(echo "$curtag" | cut -d'.' -f3)
-        # avoid empty patch number
-        [ -n "$patch" ] && ((patch--)) || patch=".x"
-        prevtag="${major_minor}.${patch}"
-
-        echo "" > body.log
-        if git tag | grep $prevtag ; then
-          git log -q ${curtag}...${prevtag} --pretty="- %s" -q --no-color >> body.log
-        else
-          git log --pretty="- %s" -q --no-color >> body.log
-        fi
-        line_count=$(cat body.log | wc -l)
-
-        echo "curtag=$curtag" >> $GITHUB_OUTPUT
-        echo "prevtag=$prevtag" >> $GITHUB_OUTPUT
-        echo "line_count=$line_count" >> $GITHUB_OUTPUT
-
-    - run: echo curtag is ${{ steps.tag.outputs.curtag }}
-    - run: echo prevtag is ${{ steps.tag.outputs.prevtag }}
-    - run: echo line_count is ${{ steps.tag.outputs.line_count }}
-    - run: cat body.log
-
-    #  create Github release with release note from file and binary asset attached
-    - uses: ncipollo/release-action@v1
+    - name: release
+      uses: softprops/action-gh-release@v1
       with:
-        name: ${{ env.GITHUB_REF_NAME }}
-        tag: ${{ env.GITHUB_REF_NAME }}
-        artifacts: ${{env.output-dir}}
-        bodyFile: "body.log"
-        token: ${{ secrets.GITHUB_TOKEN }}
+        name: Release ${{ github.ref }}
+        tag_name: ${{ github.ref }}
+        generate_release_notes: true
+        files: |
+          bin/goxz
