@@ -10,4 +10,5 @@
 
 <!--
 PS1="snakesneaks ~ $ "
+git tag vx.x.x && git push origin --tags
 -->
