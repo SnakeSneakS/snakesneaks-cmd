@@ -47,10 +47,10 @@ func NewDrawer(ctx context.Context) *drawer {
 		appendSlices(
 			repeat([]string{
 				"            Snake Is Sneaking",
-			}, 10),
+			}, 20),
 			repeat([]string{
 				"",
-			}, 5),
+			}, 20),
 		),
 		{
 			{
