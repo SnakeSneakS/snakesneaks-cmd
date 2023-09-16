@@ -11,7 +11,7 @@ import (
 )
 
 func Run() {
-	var w gracefulWorker = worker.NewWorker(50 * time.Millisecond)
+	var w gracefulWorker = worker.NewWorker(100 * time.Millisecond)
 	gracefulRun(w, time.Second*10)
 }
 
@@ -29,7 +29,7 @@ func gracefulRun(worker gracefulWorker, shutdownDelay time.Duration) {
 
 	<-ctx.Done()
 
-	signal.Reset(ignoredSignals...)
+	//signal.Reset(ignoredSignals...) //if this line is comment out, it becomes unstoppable by Ctrl+C
 	ctx, cancel := context.WithTimeout(context.Background(), shutdownDelay)
 	defer cancel()
 
