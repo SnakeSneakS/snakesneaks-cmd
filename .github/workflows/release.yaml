@@ -9,12 +9,21 @@ on:
 
 env:
   binary-name: snakesneaks
-
+  output-dir: bin/
 jobs:
   build:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
+    strategy:
+      matrix: 
+        goos: [linux, windows, darwin]
+        goarch: ["386", amd64, arm64]
+        exclude:
+          - goarch: "386"
+            goos: darwin
+          - goarch: arm64
+            goos: windows
     steps:
     # debug
     - name: Dump env
@@ -29,15 +38,18 @@ jobs:
         fetch-depth: 0 # get all tags, needed to get git log
         ref: main
 
-    # Go environment
     - name: setup Go Lang
       uses: actions/setup-go@v3
       with:
         go-version: '^1.19.2'
-    - run: |
+    - name: setup Go Binary Directory
+      run: |
+        mkdir ${{env.output-dir}}
+    - name: Go Build
+      run: |
         go version
         go mod tidy
-        go build -ldflags "-X main.Version=${GITHUB_REF_NAME} -X main.BuiltBy=github-actions" -o ${{ env.binary-name }} main.go
+        GOARCH=${{matrix.goarch}} goos=${{matrix.goos}} go build -ldflags "-X main.Version=${GITHUB_REF_NAME} -X main.BuiltBy=github-actions" -o ${{env.output-dir}}/${{env.binary-name}}-${{matrix.goarch}}-${{matrix.goos}} main.go
 
     - run: git version
     - run: git branch
@@ -75,6 +87,6 @@ jobs:
       with:
         name: ${{ env.GITHUB_REF_NAME }}
         tag: ${{ env.GITHUB_REF_NAME }}
-        artifacts: ${{ env.binary-name }}
+        artifacts: ${{env.output-dir}}
         bodyFile: "body.log"
         token: ${{ secrets.GITHUB_TOKEN }}
