@@ -2,7 +2,7 @@
 
 BIN_NAME := snakesneaks
 BIN_DIR := ./bin
-X_BIN_DIR := $(BIN_DIR)/goxz
+X_BIN_DIR := $(BIN_DIR)/gox
 VERSION := "x.x.x"
 
 GOBIN ?= $(shell go env GOPATH)/bin
@@ -16,18 +16,18 @@ build: ##  ##  ##
 	go build -o $(BIN_DIR)/$(BIN_NAME) main.go
 
 .PHONY: x-build
-x-build: $(GOBIN)/goxz ##  ##  ## 
-	goxz -d $(X_BIN_DIR) -n $(BIN_NAME) .
-
-$(GOBIN)/goxz: ##  ##  ## 
-	@go install github.com/Songmu/goxz/cmd/goxz@v0.9.1
+x-build: $(GOBIN)/gox ##  ##  ## 
+	mkdir -p $(X_BIN_DIR)
+	gox -output="$(X_BIN_DIR)/$(BIN_NAME)-{{.OS}}-{{.Arch}}" -os="darwin linux windows" -osarch "!darwin/386 !darwin/arm" -arch="amd64 arm" .
 
 
-$(GOBIN)/ghr: ##  ##  ## 
-	@go install github.com/tcnksm/ghr@latest
+.PHONY: clean
+clean:  ##  ##  ## 
+	rm -rf bin/*
 
-$(GOBIN)/gobump: ##  ##  ## 
-	@go install github.com/x-motemen/gobump/cmd/gobump@master
+$(GOBIN)/gox: ##  ##  ## 
+	@go install github.com/mitchellh/gox@v1.0.1
+
 
 .PHONY: help
 help: ## show help ## make help ## a
