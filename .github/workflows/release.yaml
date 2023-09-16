@@ -5,7 +5,7 @@ run-name: Create Github Release for GoLang binary
 on: 
   push:
     tags:
-    - 'r*'
+    - '*'
 
 env:
   binary-name: snakesneaks
