@@ -39,7 +39,7 @@ jobs:
     - run: |
         go version
         go mod tidy
-        go build -ldflags "-X main.Version=${GITHUB_REF_NAME} -X main.BuiltBy=github-actions" main.go -o ${{ env.binary-name }}
+        go build -ldflags "-X main.Version=${GITHUB_REF_NAME} -X main.BuiltBy=github-actions" -o ${{ env.binary-name }} main.go
 
     - run: git version
     - run: git branch
