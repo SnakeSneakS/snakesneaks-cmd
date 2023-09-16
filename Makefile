@@ -24,10 +24,10 @@ $(GOBIN)/goxz: ##  ##  ##
 
 
 $(GOBIN)/ghr: ##  ##  ## 
-   @go install github.com/tcnksm/ghr@latest
+	@go install github.com/tcnksm/ghr@latest
 
 $(GOBIN)/gobump: ##  ##  ## 
-   @go install github.com/x-motemen/gobump/cmd/gobump@master
+	@go install github.com/x-motemen/gobump/cmd/gobump@master
 
 .PHONY: help
 help: ## show help ## make help ## a
