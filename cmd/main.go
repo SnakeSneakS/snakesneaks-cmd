@@ -8,7 +8,7 @@ import (
 )
 
 func Run() {
-	dps := 100 * time.Millisecond
+	dps := 200 * time.Millisecond
 
 	var w runtime.GracefulWorker = worker.NewWorker(dps)
 	runtime.UnstoppableRun(w, time.Second*10)
