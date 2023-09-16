@@ -1,5 +1,6 @@
 # snakesneaks-cmd
 - 暇つぶしに作った、ヘビが出てくるだけのコマンド
+![demo](docs/demo.gif)
 
 # 使い方
 - バイナリの取得
