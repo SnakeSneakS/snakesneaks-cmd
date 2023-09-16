@@ -10,4 +10,4 @@
         3. 手元でビルドして実行
 
 - ヘビからのおすすめ: 
-    - go install github.com/snakesneaks/snakesneaks-cmd@latest && mv $(go env GOPATH)/bin/snakesneaks-cmd $(go env GOPATH)/bin/snakesneaks
+    - `go install github.com/snakesneaks/snakesneaks-cmd@latest && mv $(go env GOPATH)/bin/snakesneaks-cmd $(go env GOPATH)/bin/snakesneaks`
